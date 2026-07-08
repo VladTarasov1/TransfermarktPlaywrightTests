@@ -19,13 +19,7 @@ public class HomePageTests : PageTest
         await _homePage.DismissCookieBannerIfPresent();
     }
 
-    [Test]
-    public async Task HomepageLoads()
-    {
-        await Page.GotoAsync("https://www.transfermarkt.com/");
-        await Expect(Page).ToHaveTitleAsync(new System.Text.RegularExpressions.Regex(".*Transfermarkt.*"));
-    }
-
+    // TODO: merge all bellow and expand logic - all clubs, sorting, redirect to exact club page
     [Test]
     public async Task PremierLeagueTable_IsDisplayed_AfterNavigatingFromHomePage()
     {

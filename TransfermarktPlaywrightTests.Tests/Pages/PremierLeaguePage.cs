@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Microsoft.Playwright;
 
 namespace TransfermarktPlaywrightTests.Tests.Pages;
@@ -9,16 +10,14 @@ public class PremierLeaguePage
 {
     private readonly IPage _page;
 
+    public const string Url = "https://www.transfermarkt.com/premier-league/startseite/wettbewerb/GB1";
+
     private ILocator PageHeading =>
         _page.GetByRole(AriaRole.Heading, new() { Name = "Clubs - Premier League" });
 
     private ILocator Table => _page.Locator("table.items").First;
     private ILocator HeaderCells => Table.Locator("thead th");
     private ILocator BodyRows => Table.Locator("tbody tr");
-
-    // Ad interstitials use a dynamic google_ads_iframe_ id suffix, so match by prefix.
-    private IFrameLocator AdFrame =>
-        _page.FrameLocator("iframe[id^='google_ads_iframe_']");
 
     public PremierLeaguePage(IPage page)
     {
@@ -30,15 +29,14 @@ public class PremierLeaguePage
     /// </summary>
     public async Task DismissAdIfPresent()
     {
-        try
+        foreach (var frame in _page.Frames)
         {
-            await AdFrame
-                .GetByRole(AriaRole.Button, new() { Name = "Close ad" })
-                .ClickAsync(new() { Timeout = 5000 });
-        }
-        catch (TimeoutException)
-        {
-            // No ad shown this run - safe to ignore.
+            var closeAdButton = frame.GetByRole(AriaRole.Button, new() { NameRegex = new Regex("Close") });
+            if (await closeAdButton.IsVisibleAsync())
+            {
+                await closeAdButton.ClickAsync();
+                return;
+            }
         }
     }
 
