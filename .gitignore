@@ -1,0 +1,40 @@
+## .NET build outputs
+bin/
+obj/
+*.user
+*.suo
+
+## Visual Studio / VS Code
+.vs/
+.vscode/
+*.userosscache
+*.sln.docstates
+
+## Rider
+.idea/
+
+## Test results
+TestResults/
+*.trx
+[Tt]est[Rr]esult*/
+
+## Playwright artifacts (traces, screenshots, videos generated during test runs)
+playwright-report/
+test-results/
+**/trace.zip
+
+## NuGet
+*.nupkg
+**/packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## OS files
+.DS_Store
+Thumbs.db
+
+## Env / secrets
+.env
+appsettings.local.json
+appsettings.*.local.json
