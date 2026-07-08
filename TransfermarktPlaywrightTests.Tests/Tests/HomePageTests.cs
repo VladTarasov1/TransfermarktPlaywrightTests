@@ -19,45 +19,19 @@ public class HomePageTests : PageTest
         await _homePage.DismissCookieBannerIfPresent();
     }
 
-    // TODO: merge all bellow and expand logic - all clubs, sorting, redirect to exact club page
     [Test]
-    public async Task PremierLeagueTable_IsDisplayed_AfterNavigatingFromHomePage()
+    public async Task PremierLeagueTable_DisplaysAllTwentyClubsWithExpectedData()
     {
         var leaguePage = await _homePage.GoToPremierLeagueTable();
 
-        Assert.That(await leaguePage.IsDisplayed(), Is.True,
-            "Expected the Premier League clubs/table page heading to be visible.");
-    }
-
-    [Test]
-    public async Task PremierLeagueTable_HasExpectedColumnHeaders()
-    {
-        var leaguePage = await _homePage.GoToPremierLeagueTable();
         var headers = await leaguePage.GetColumnHeaders();
-
         Assert.That(headers, Does.Contain("Club"),
             "Expected a 'Club' column header in the table.");
-        Assert.That(headers, Is.Not.Empty,
-            "Expected at least one column header.");
-    }
-
-    [Test]
-    public async Task PremierLeagueTable_ContainsAllTwentyClubs()
-    {
-        var leaguePage = await _homePage.GoToPremierLeagueTable();
-        var rowCount = await leaguePage.GetTableRowCount();
 
         // Premier League has 20 clubs per season.
-        Assert.That(rowCount, Is.EqualTo(20),
-            $"Expected 20 clubs in the Premier League table, found {rowCount}.");
-    }
+        await leaguePage.AssertClubCountAsync(20);
 
-    [Test]
-    public async Task PremierLeagueTable_ContainsKnownClub()
-    {
-        var leaguePage = await _homePage.GoToPremierLeagueTable();
         var clubNames = await leaguePage.GetClubNames();
-
         Assert.That(clubNames, Does.Contain("Manchester City"),
             "Expected 'Manchester City' to appear among the listed clubs.");
     }

@@ -34,9 +34,14 @@ public class HomePage
     /// </summary>
     public async Task DismissCookieBannerIfPresent()
     {
-        if (await AcceptCookieButton.IsVisibleAsync())
+        try
         {
+            await AcceptCookieButton.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 5000 });
             await AcceptCookieButton.ClickAsync();
+        }
+        catch (TimeoutException)
+        {
+            // Banner didn't appear - safe to ignore.
         }
     }
 

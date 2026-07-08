@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Microsoft.Playwright;
+using static Microsoft.Playwright.Assertions;
 
 namespace TransfermarktPlaywrightTests.Tests.Pages;
 
@@ -11,9 +12,6 @@ public class PremierLeaguePage
     private readonly IPage _page;
 
     public const string Url = "https://www.transfermarkt.com/premier-league/startseite/wettbewerb/GB1";
-
-    private ILocator PageHeading =>
-        _page.GetByRole(AriaRole.Heading, new() { Name = "Clubs - Premier League" });
 
     private ILocator Table => _page.Locator("table.items").First;
     private ILocator HeaderCells => Table.Locator("thead th");
@@ -32,22 +30,22 @@ public class PremierLeaguePage
         foreach (var frame in _page.Frames)
         {
             var closeAdButton = frame.GetByRole(AriaRole.Button, new() { NameRegex = new Regex("Close") });
-            if (await closeAdButton.IsVisibleAsync())
+            try
             {
+                await closeAdButton.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 1500 });
                 await closeAdButton.ClickAsync();
                 return;
+            }
+            catch (TimeoutException)
+            {
+                // No ad in this frame - check the next one.
             }
         }
     }
 
-    public async Task<bool> IsDisplayed()
+    public async Task AssertClubCountAsync(int expectedCount)
     {
-        return await PageHeading.IsVisibleAsync();
-    }
-
-    public async Task<int> GetTableRowCount()
-    {
-        return await BodyRows.CountAsync();
+        await Expect(BodyRows).ToHaveCountAsync(expectedCount);
     }
 
     public ILocator GetRows() => BodyRows;
