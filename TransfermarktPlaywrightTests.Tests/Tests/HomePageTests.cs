@@ -16,7 +16,7 @@ public class HomePageTests : PageTest
     {
         _homePage = new HomePage(Page);
         await _homePage.NavigateAsync();
-        await _homePage.DismissCookieBannerIfPresentAsync();
+        await _homePage.DismissCookieBannerIfPresent();
     }
 
     [Test]
@@ -29,17 +29,17 @@ public class HomePageTests : PageTest
     [Test]
     public async Task PremierLeagueTable_IsDisplayed_AfterNavigatingFromHomePage()
     {
-        var clubsPage = await _homePage.GoToPremierLeagueTableAsync();
+        var leaguePage = await _homePage.GoToPremierLeagueTable();
 
-        Assert.That(await clubsPage.IsDisplayedAsync(), Is.True,
+        Assert.That(await leaguePage.IsDisplayed(), Is.True,
             "Expected the Premier League clubs/table page heading to be visible.");
     }
 
     [Test]
     public async Task PremierLeagueTable_HasExpectedColumnHeaders()
     {
-        var clubsPage = await _homePage.GoToPremierLeagueTableAsync();
-        var headers = await clubsPage.GetColumnHeadersAsync();
+        var leaguePage = await _homePage.GoToPremierLeagueTable();
+        var headers = await leaguePage.GetColumnHeaders();
 
         Assert.That(headers, Does.Contain("Club"),
             "Expected a 'Club' column header in the table.");
@@ -50,8 +50,8 @@ public class HomePageTests : PageTest
     [Test]
     public async Task PremierLeagueTable_ContainsAllTwentyClubs()
     {
-        var clubsPage = await _homePage.GoToPremierLeagueTableAsync();
-        var rowCount = await clubsPage.GetRowCountAsync();
+        var leaguePage = await _homePage.GoToPremierLeagueTable();
+        var rowCount = await leaguePage.GetTableRowCount();
 
         // Premier League has 20 clubs per season.
         Assert.That(rowCount, Is.EqualTo(20),
@@ -61,8 +61,8 @@ public class HomePageTests : PageTest
     [Test]
     public async Task PremierLeagueTable_ContainsKnownClub()
     {
-        var clubsPage = await _homePage.GoToPremierLeagueTableAsync();
-        var clubNames = await clubsPage.GetClubNamesAsync();
+        var leaguePage = await _homePage.GoToPremierLeagueTable();
+        var clubNames = await leaguePage.GetClubNames();
 
         Assert.That(clubNames, Does.Contain("Manchester City"),
             "Expected 'Manchester City' to appear among the listed clubs.");

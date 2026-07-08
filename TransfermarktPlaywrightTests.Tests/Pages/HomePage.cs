@@ -31,12 +31,8 @@ public class HomePage
 
     /// <summary>
     /// Dismisses the cookie/consent banner if present.
-    /// Consent banners are a common source of test flakiness - they may
-    /// or may not appear depending on session/geo/cache state, so this
-    /// is intentionally tolerant of both outcomes rather than assuming
-    /// it always shows up.
     /// </summary>
-    public async Task DismissCookieBannerIfPresentAsync()
+    public async Task DismissCookieBannerIfPresent()
     {
         try
         {
@@ -49,19 +45,15 @@ public class HomePage
     }
 
     /// <summary>
-    /// Navigates from the homepage to the Premier League clubs page
-    /// via the hamburger menu, matching the site's real navigation flow.
-    /// Note: transfermarkt's homepage does not embed a standings widget
-    /// directly - reaching any Premier League table requires navigation.
-    /// This is documented as a design assumption in the README.
+    /// Navigates from the homepage to the Premier League clubs page via the hamburger menu.
     /// </summary>
-    public async Task<PremierLeaguePage> GoToPremierLeagueTableAsync()
+    public async Task<PremierLeaguePage> GoToPremierLeagueTable()
     {
         await HamburgerMenu.ClickAsync();
         await GetRecommendationLink("Premier League").ClickAsync();
 
         var clubsPage = new PremierLeaguePage(_page);
-        await clubsPage.DismissAdInterstitialIfPresentAsync();
+        await clubsPage.DismissAdIfPresent();
         return clubsPage;
     }
 }

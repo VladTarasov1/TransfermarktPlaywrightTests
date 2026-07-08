@@ -17,7 +17,7 @@ public class PremierLeaguePage
     private ILocator BodyRows => Table.Locator("tbody tr");
 
     // Ad interstitials use a dynamic google_ads_iframe_ id suffix, so match by prefix.
-    private IFrameLocator AdInterstitialFrame =>
+    private IFrameLocator AdFrame =>
         _page.FrameLocator("iframe[id^='google_ads_iframe_']");
 
     public PremierLeaguePage(IPage page)
@@ -26,14 +26,13 @@ public class PremierLeaguePage
     }
 
     /// <summary>
-    /// Dismisses an ad interstitial if one appears. These are
-    /// non-deterministic (ad-serving dependent), so tolerate absence.
+    /// Dismisses an ad if one appears.
     /// </summary>
-    public async Task DismissAdInterstitialIfPresentAsync()
+    public async Task DismissAdIfPresent()
     {
         try
         {
-            await AdInterstitialFrame
+            await AdFrame
                 .GetByRole(AriaRole.Button, new() { Name = "Close ad" })
                 .ClickAsync(new() { Timeout = 5000 });
         }
@@ -43,19 +42,19 @@ public class PremierLeaguePage
         }
     }
 
-    public async Task<bool> IsDisplayedAsync()
+    public async Task<bool> IsDisplayed()
     {
         return await PageHeading.IsVisibleAsync();
     }
 
-    public async Task<int> GetRowCountAsync()
+    public async Task<int> GetTableRowCount()
     {
         return await BodyRows.CountAsync();
     }
 
     public ILocator GetRows() => BodyRows;
 
-    public async Task<List<string>> GetColumnHeadersAsync()
+    public async Task<List<string>> GetColumnHeaders()
     {
         return (await HeaderCells.AllInnerTextsAsync())
             .Select(h => h.Trim())
@@ -63,7 +62,7 @@ public class PremierLeaguePage
             .ToList();
     }
 
-    public async Task<List<string>> GetClubNamesAsync()
+    public async Task<List<string>> GetClubNames()
     {
         var links = BodyRows.Locator("td.hauptlink.no-border-links a");
         return (await links.AllInnerTextsAsync())
