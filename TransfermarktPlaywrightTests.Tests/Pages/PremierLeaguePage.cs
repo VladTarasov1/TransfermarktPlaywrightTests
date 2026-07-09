@@ -15,15 +15,29 @@ public class PremierLeaguePage(IPage page) : BasePage(page)
     // The season <select> is hidden and driven by a "chosen.js" fake dropdown UI next to it.
     private ILocator SeasonDropdown => _page.Locator("select[name='saison_id'] + div.chzn-container");
     private ILocator ShowButton => _page.Locator("input[type='submit'][value='Show']");
+    private ILocator SortLink(string columnName) => Table.Locator("thead th a.sort-link", new() { HasText = columnName });
 
     // Opens the dropdown, picks the season, and submits the form.
-    // Season must match the dropdown's display text exactly, e.g. "25/26". 
+    // Season must match the dropdown's display text exactly, e.g. "25/26".
     public async Task FilterBySeason(string season)
     {
         await SeasonDropdown.Locator("a.chzn-single").ClickAsync();
         await SeasonDropdown.Locator("li.active-result", new() { HasText = season }).ClickAsync();
         await ShowButton.ClickAsync();
         await Expect(Rows.First).ToBeVisibleAsync();
+    }
+
+    /* Clicks the given column header to sort by that column; the site defaults to descending order.
+       The table refreshes via AJAX without changing the URL, so we wait for the underlying sort
+       request to complete rather than for a URL change or row count.
+       columnName must match the column header text exactly, e.g. "ø age". */
+    public async Task SortByColumn(string columnName)
+    {
+        var sortLink = SortLink(columnName);
+        var sortKey = (await sortLink.GetAttributeAsync("href"))?.Split('/').Last() ?? string.Empty;
+        var sortResponse = _page.WaitForResponseAsync(response => response.Url.Contains($"sort/{sortKey}"));
+        await sortLink.ClickAsync();
+        await sortResponse;
     }
 
     // Asserts that the number of club rows matches the expected count.
@@ -41,7 +55,7 @@ public class PremierLeaguePage(IPage page) : BasePage(page)
     }
 
     // Gets the club overview table rows as a list of typed objects.
-    public async Task<List<ClubsTableColumns>> GetClubOverviewRows()
+    public async Task<List<ClubsTableColumns>> GetClubRows()
     {
         var rowCount = await Rows.CountAsync();
         var rows = new List<ClubsTableColumns>(rowCount);

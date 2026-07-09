@@ -40,7 +40,7 @@ public class HomePageTests : PageTest
             "Expected the club overview table to expose these columns.");
 
         // check each club's data
-        var rows = await leaguePage.GetClubOverviewRows();
+        var rows = await leaguePage.GetClubRows();
         Assert.That(rows.Select(row => row.ClubName), Is.EquivalentTo(ExpectedClubs2526),
             "Expected the listed clubs to match the expected list.");
         foreach (var row in rows)
@@ -68,7 +68,16 @@ public class HomePageTests : PageTest
         Assert.That(rows.Select(row => row.TotalMarketValueEur), Is.Ordered.Descending,
             "Expected clubs to be sorted by total market value, highest first.");
 
-        // TODO: sort by age and confirm right club appers first and last
+        // check that sorting by average age (DESC) puts the oldest and youngest squads in the right place
+        await leaguePage.SortByColumn("ø age");
+        var rowsByAge = await leaguePage.GetClubRows();
+        Assert.Multiple(() =>
+        {
+            Assert.That(rowsByAge.First().ClubName, Is.EqualTo("Fulham FC"),
+                "Expected Fulham FC to have the oldest average squad age.");
+            Assert.That(rowsByAge.Last().ClubName, Is.EqualTo("Chelsea FC"),
+                "Expected Chelsea FC to have the youngest average squad age.");
+        });
 
         // check that the footer summary row
         var summaryData = await leaguePage.GetFooterTotals();
