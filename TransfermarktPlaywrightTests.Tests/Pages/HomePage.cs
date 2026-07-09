@@ -21,6 +21,16 @@ public class HomePage(IPage page) : BasePage(page)
     private ILocator GetRecommendationLink(string linkName) =>
         _page.Locator($".recommendation a[title='{linkName}']");
 
+    private ILocator TopNavLink(string linkName) =>
+        _page.Locator("nav.main-navbar").GetByRole(AriaRole.Link, new() { Name = linkName, Exact = true });
+
+    // Clicks a top-level nav bar link (e.g. "COMPETITIONS") and waits for the resulting page to finish loading.
+    public async Task NavigateViaTopNav(string linkName)
+    {
+        await TopNavLink(linkName).ClickAsync();
+        await _page.WaitForLoadStateAsync(LoadState.Load);
+    }
+
     // Opens a recommendation link from the homepage via the hamburger menu.
     public async Task<LeaguePage> OpenRecommendation(string linkTitle)
     {

@@ -49,6 +49,12 @@ public class LeaguePage(IPage page) : BasePage(page)
         await Expect(Rows).ToHaveCountAsync(expectedCount);
     }
 
+    // Asserts that the club table has rendered with at least one row.
+    public async Task AssertTableVisible()
+    {
+        await Expect(Rows.First).ToBeVisibleAsync();
+    }
+
     // Returns the column headers list in the order they appear in the table.
     public async Task<List<string>> GetColumnHeaders()
     {
