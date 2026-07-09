@@ -7,7 +7,6 @@ namespace TransfermarktPlaywrightTests.Tests.Pages;
 // Represents the "Clubs - Premier League" squad/market-value overview table
 public class PremierLeaguePage(IPage page) : BasePage(page)
 {
-    public const string Url = "https://www.transfermarkt.com/premier-league/startseite/wettbewerb/GB1";
     private ILocator Table => _page.Locator(".responsive-table table.items");
     private ILocator ColumnHeaders => Table.Locator("thead th:not(.hide)");
     private ILocator Rows => Table.Locator("tbody tr");

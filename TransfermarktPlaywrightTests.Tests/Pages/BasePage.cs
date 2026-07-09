@@ -13,16 +13,9 @@ public abstract class BasePage(IPage page)
     protected ILocator HamburgerMenu => _page.Locator(".hamburger");
 
     // Dismisses the cookie/consent banner if present.
-    public async Task DismissCookieBannerIfPresent()
+    public async Task DismissCookieBanner()
     {
-        try
-        {
-            await AcceptCookieButton.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 5000 });
-            await AcceptCookieButton.ClickAsync();
-        }
-        catch (TimeoutException)
-        {
-            // Banner didn't appear - safe to ignore.
-        }
+        await AcceptCookieButton.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+        await AcceptCookieButton.ClickAsync();
     }
 }
