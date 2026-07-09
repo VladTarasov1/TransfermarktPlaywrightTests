@@ -38,3 +38,6 @@ Thumbs.db
 .env
 appsettings.local.json
 appsettings.*.local.json
+
+## Local notes / planning docs (not part of the shipped project)
+docs/
