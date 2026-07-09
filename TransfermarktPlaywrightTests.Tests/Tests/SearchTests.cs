@@ -1,0 +1,69 @@
+using Microsoft.Playwright.NUnit;
+using TransfermarktPlaywrightTests.Tests.Pages;
+
+namespace TransfermarktPlaywrightTests.Tests.Tests;
+
+// Test 2: "Search Engine"
+[TestFixture]
+public class SearchTests : PageTest
+{
+    private HomePage _homePage = null!;
+
+    [SetUp]
+    public async Task SetUp()
+    {
+        _homePage = new HomePage(Page);
+        await _homePage.Navigate();
+        await _homePage.DismissCookieBanner();
+    }
+
+    [Test]
+    public async Task Search_WithResults_ReturnsMatchesAndAllowsNavigation()
+    {
+        var resultsPage = await _homePage.Search("Messi");
+
+        // check results not empty
+        Assert.That(await resultsPage.HasNoResults(), Is.False,
+            "Expected 'Messi' to return search results.");
+
+        // check that every visible category has a positive hit count
+        var hitCounts = await resultsPage.GetCategoryHitCounts();
+        Assert.That(hitCounts, Has.All.GreaterThan(0),
+            "Expected every visible category's hit count to be positive.");
+
+        // check players category results
+        var players = await resultsPage.GetPlayerResults();
+        Assert.Multiple(() =>
+        {
+            Assert.That(players, Is.Not.Empty,
+                "Expected the Players category to have at least one result.");
+            Assert.That(players.Select(player => player.Name), Does.Contain("Lionel Messi"),
+                "Expected 'Lionel Messi' to appear among the player results.");
+            Assert.That(players.Select(player => player.ProfileUrl), Has.All.Contains("/profil/"),
+                "Expected every player result to link to a player profile page.");
+        });
+
+        // check that clicking a player result navigates to its profile page
+        var profilePage = await resultsPage.OpenFirstPlayerResult();
+        var profileName = await profilePage.GetPlayerName();
+        var clickedPlayerSurname = players.First().Name.Split(' ').Last();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(profilePage.CurrentUrl, Does.Contain("/profil/"),
+                "Expected navigating to the first player result to reach a profile page.");
+            Assert.That(profileName, Does.Contain(clickedPlayerSurname),
+                "Expected the profile page heading to reflect the clicked player.");
+        });
+    }
+
+    [Test]
+    public async Task Search_WithNoMatches_ShowsNothingFoundGuidance()
+    {
+        var resultsPage = await _homePage.Search("NonExistentQueryWithNoMatches");
+
+        await resultsPage.WaitForNothingFound();
+        Assert.That(await resultsPage.HasNoResults(), Is.True,
+            "Expected an unmatched query to land on the 'no results' page.");
+    }
+}
