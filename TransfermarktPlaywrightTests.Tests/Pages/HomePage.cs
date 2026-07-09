@@ -16,16 +16,18 @@ public class HomePage(IPage page) : BasePage(page)
 
     private ILocator SearchButton => _page.Locator(".tm-header__search button[type='Submit']");
 
+    private ILocator HamburgerMenu => _page.Locator(".hamburger");
+
     private ILocator GetRecommendationLink(string linkName) =>
         _page.Locator($".recommendation a[title='{linkName}']");
 
     // Opens a recommendation link from the homepage via the hamburger menu.
-    public async Task<PremierLeaguePage> OpenRecommendation(string linkTitle)
+    public async Task<LeaguePage> OpenRecommendation(string linkTitle)
     {
         await HamburgerMenu.ClickAsync();
         await GetRecommendationLink(linkTitle).ClickAsync();
 
-        var clubsPage = new PremierLeaguePage(_page);
+        var clubsPage = new LeaguePage(_page);
         return clubsPage;
     }
 

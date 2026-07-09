@@ -4,15 +4,13 @@ using static Microsoft.Playwright.Assertions;
 
 namespace TransfermarktPlaywrightTests.Tests.Pages;
 
-// Represents the "Clubs - Premier League" squad/market-value overview table
-public class PremierLeaguePage(IPage page) : BasePage(page)
+// Represents a league's page with a table.
+public class LeaguePage(IPage page) : BasePage(page)
 {
     private ILocator Table => _page.Locator(".responsive-table table.items");
     private ILocator ColumnHeaders => Table.Locator("thead th:not(.hide)");
     private ILocator Rows => Table.Locator("tbody tr");
     private ILocator FooterSummaryCells => Table.Locator("tfoot td");
-
-    // The season <select> is hidden and driven by a "chosen.js" fake dropdown UI next to it.
     private ILocator SeasonDropdown => _page.Locator("select[name='saison_id'] + div.chzn-container");
     private ILocator ShowButton => _page.Locator("input[type='submit'][value='Show']");
     private ILocator SortLink(string columnName) => Table.Locator("thead th a.sort-link", new() { HasText = columnName });
