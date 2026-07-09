@@ -3,7 +3,7 @@ using TransfermarktPlaywrightTests.Tests.Pages;
 
 namespace TransfermarktPlaywrightTests.Tests.Tests;
 
-// Test 1: "Premier League Table on HomePage"
+// League table tests
 [TestFixture]
 public class TableTests : PageTest
 {

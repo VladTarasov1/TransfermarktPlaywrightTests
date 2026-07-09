@@ -3,7 +3,7 @@ using TransfermarktPlaywrightTests.Tests.Pages;
 
 namespace TransfermarktPlaywrightTests.Tests.Tests;
 
-// Test 2: "Search Engine"
+// "Search Engine" tests
 [TestFixture]
 public class SearchTests : PageTest
 {
@@ -55,6 +55,16 @@ public class SearchTests : PageTest
             Assert.That(profileName, Does.Contain(clickedPlayerSurname),
                 "Expected the profile page heading to reflect the clicked player.");
         });
+    }
+
+    [Test]
+    public async Task Search_IsCaseInsensitive()
+    {
+        var resultsPage = await _homePage.Search("messi");
+
+        var players = await resultsPage.GetPlayerResults();
+        Assert.That(players.Select(player => player.Name), Does.Contain("Lionel Messi"),
+            "Expected a lowercase query to still match 'Lionel Messi'.");
     }
 
     [Test]

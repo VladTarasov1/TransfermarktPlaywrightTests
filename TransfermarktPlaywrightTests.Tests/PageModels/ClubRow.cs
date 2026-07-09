@@ -1,6 +1,6 @@
-namespace TransfermarktPlaywrightTests.Tests.Models;
+namespace TransfermarktPlaywrightTests.Tests.PageModels;
 
-public record ClubsTableColumns(
+public record ClubRow(
     string ClubName,
     string ClubProfileUrl,
     int SquadSize,

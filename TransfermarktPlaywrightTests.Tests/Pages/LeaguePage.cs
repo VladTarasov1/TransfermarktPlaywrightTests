@@ -1,5 +1,5 @@
 using Microsoft.Playwright;
-using TransfermarktPlaywrightTests.Tests.Models;
+using TransfermarktPlaywrightTests.Tests.PageModels;
 using static Microsoft.Playwright.Assertions;
 
 namespace TransfermarktPlaywrightTests.Tests.Pages;
@@ -26,16 +26,21 @@ public class LeaguePage(IPage page) : BasePage(page)
     }
 
     /* Clicks the given column header to sort by that column; the site defaults to descending order.
-       The table refreshes via AJAX without changing the URL, so we wait for the underlying sort
-       request to complete rather than for a URL change or row count.
+       The table refreshes via AJAX without changing the URL. Waiting for the sort request's response
+       isn't enough on its own - the DOM can still be mid-swap when the response arrives - so we also
+       wait for the pre-click rows to actually detach from the DOM before returning.
        columnName must match the column header text exactly, e.g. "ø age". */
     public async Task SortByColumn(string columnName)
     {
         var sortLink = SortLink(columnName);
         var sortKey = (await sortLink.GetAttributeAsync("href"))?.Split('/').Last() ?? string.Empty;
+        var previousRows = await Rows.First.ElementHandleAsync();
+
         var sortResponse = _page.WaitForResponseAsync(response => response.Url.Contains($"sort/{sortKey}"));
         await sortLink.ClickAsync();
         await sortResponse;
+
+        await previousRows.WaitForElementStateAsync(ElementState.Hidden);
     }
 
     // Asserts that the number of club rows matches the expected count.
@@ -53,17 +58,17 @@ public class LeaguePage(IPage page) : BasePage(page)
     }
 
     // Gets the club overview table rows as a list of typed objects.
-    public async Task<List<ClubsTableColumns>> GetClubRows()
+    public async Task<List<ClubRow>> GetClubRows()
     {
         var rowCount = await Rows.CountAsync();
-        var rows = new List<ClubsTableColumns>(rowCount);
+        var rows = new List<ClubRow>(rowCount);
 
         for (var i = 0; i < rowCount; i++)
         {
             var cells = Rows.Nth(i).Locator("td");
             var nameLink = cells.Nth(1).Locator("a").First;
 
-            rows.Add(new ClubsTableColumns(
+            rows.Add(new ClubRow(
                 ClubName: (await nameLink.InnerTextAsync()).Trim(),
                 ClubProfileUrl: await nameLink.GetAttributeAsync("href") ?? string.Empty,
                 SquadSize: int.Parse((await cells.Nth(2).InnerTextAsync()).Trim()),
@@ -77,11 +82,11 @@ public class LeaguePage(IPage page) : BasePage(page)
     }
 
     // Gets the footer summary row as a typed object.
-    public async Task<ClubsTableSummaryColumns> GetFooterTotals()
+    public async Task<ClubFooterTotals> GetFooterTotals()
     {
         var ageText = (await FooterSummaryCells.Nth(3).InnerTextAsync()).Trim();
 
-        return new ClubsTableSummaryColumns(
+        return new ClubFooterTotals(
             SquadTotal: int.Parse((await FooterSummaryCells.Nth(2).InnerTextAsync()).Trim()),
             AverageAge: double.Parse(ageText.Split(' ')[0]),
             ForeignersTotal: int.Parse((await FooterSummaryCells.Nth(4).InnerTextAsync()).Trim()),

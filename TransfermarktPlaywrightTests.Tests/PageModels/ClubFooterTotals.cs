@@ -1,6 +1,6 @@
-namespace TransfermarktPlaywrightTests.Tests.Models;
+namespace TransfermarktPlaywrightTests.Tests.PageModels;
 
-public record ClubsTableSummaryColumns(
+public record ClubFooterTotals(
     int SquadTotal,
     double AverageAge,
     int ForeignersTotal,

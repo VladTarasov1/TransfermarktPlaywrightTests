@@ -1,4 +1,4 @@
-namespace TransfermarktPlaywrightTests.Tests.Models;
+namespace TransfermarktPlaywrightTests.Tests.PageModels;
 
 public record PlayerSearchResult(
     string Name,
