@@ -8,8 +8,6 @@ public class PlayerProfilePage(IPage page) : BasePage(page)
 {
     private ILocator NameHeading => _page.Locator(".data-header h1");
 
-    public string CurrentUrl => _page.Url;
-
     // Waits for the profile page's name heading to render.
     public async Task WaitForLoad()
     {

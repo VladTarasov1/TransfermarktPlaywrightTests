@@ -28,7 +28,9 @@ public class HomePage(IPage page) : BasePage(page)
     public async Task NavigateViaTopNav(string linkName)
     {
         await TopNavLink(linkName).ClickAsync();
-        await _page.WaitForLoadStateAsync(LoadState.Load);
+        // DOMContentLoaded - waits for every subresource
+        await _page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+        await DismissCookieBannerIfShown();
     }
 
     // Opens a recommendation link from the homepage via the hamburger menu.
@@ -38,6 +40,9 @@ public class HomePage(IPage page) : BasePage(page)
         await GetRecommendationLink(linkTitle).ClickAsync();
 
         var clubsPage = new LeaguePage(_page);
+        await clubsPage.AssertTableVisible();
+        await DismissCookieBannerIfShown();
+
         return clubsPage;
     }
 
@@ -46,7 +51,9 @@ public class HomePage(IPage page) : BasePage(page)
     {
         await SearchInput.FillAsync(query);
         await SearchButton.ClickAsync();
-        await _page.WaitForURLAsync(url => url.Contains($"query={Uri.EscapeDataString(query)}"));
+        // Wait for the URL change and the page to finish loading
+        await _page.WaitForURLAsync(url => url.Contains($"query={Uri.EscapeDataString(query)}"),
+            new PageWaitForURLOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
 
         return new SearchResultsPage(_page);
     }

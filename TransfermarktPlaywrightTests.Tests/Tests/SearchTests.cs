@@ -21,6 +21,7 @@ public class SearchTests : PageTest
     public async Task Search_WithResults_ReturnsMatchesAndAllowsNavigation()
     {
         var resultsPage = await _homePage.Search("Messi");
+        await resultsPage.WaitForResults();
 
         // check results not empty
         Assert.That(await resultsPage.HasNoResults(), Is.False,
@@ -61,6 +62,7 @@ public class SearchTests : PageTest
     public async Task Search_IsCaseInsensitive()
     {
         var resultsPage = await _homePage.Search("messi");
+        await resultsPage.WaitForResults();
 
         var players = await resultsPage.GetPlayerResults();
         Assert.That(players.Select(player => player.Name), Does.Contain("Lionel Messi"),

@@ -26,6 +26,12 @@ public class SearchResultsPage(IPage page) : BasePage(page)
         await Expect(NothingFoundHeading).ToBeVisibleAsync();
     }
 
+    // Waits for at least one result category to render.
+    public async Task WaitForResults()
+    {
+        await Expect(CategoryHeadlines.First).ToBeVisibleAsync();
+    }
+
     // Returns the hit count stated in each visible category headline, e.g. "... - 10 HITS".
     public async Task<List<int>> GetCategoryHitCounts()
     {

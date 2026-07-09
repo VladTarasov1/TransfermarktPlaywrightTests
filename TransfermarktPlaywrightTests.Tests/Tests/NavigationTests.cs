@@ -25,7 +25,7 @@ public class NavigationTests : PageTest
     {
         await _homePage.NavigateViaTopNav(linkName);
 
-        Assert.That(await Page.TitleAsync(), Is.EqualTo(expectedTitle),
+        Assert.That(await _homePage.GetTitle(), Is.EqualTo(expectedTitle),
             $"Expected the '{linkName}' nav link to navigate to a page titled '{expectedTitle}'.");
     }
 
@@ -34,7 +34,7 @@ public class NavigationTests : PageTest
     {
         var leaguePage = await _homePage.OpenRecommendation("Bundesliga");
 
-        Assert.That(Page.Url, Does.Contain("/bundesliga/"),
+        Assert.That(leaguePage.CurrentUrl, Does.Contain("/bundesliga/"),
             "Expected the 'Bundesliga' recommendation link to navigate to the Bundesliga competition page.");
         await leaguePage.AssertTableVisible();
     }
@@ -43,9 +43,9 @@ public class NavigationTests : PageTest
     public async Task Logo_ReturnsToHomepageFromDeepPage()
     {
         var leaguePage = await _homePage.OpenRecommendation("Bundesliga");
-        await leaguePage.OpenHomePageFromLogo();
+        var homePage = await leaguePage.OpenHomePageFromLogo();
 
-        Assert.That(Page.Url, Is.EqualTo(HomePage.Url),
+        Assert.That(homePage.CurrentUrl, Is.EqualTo(HomePage.Url),
             "Expected clicking the logo from a competition page to return to the homepage.");
     }
 
@@ -53,9 +53,9 @@ public class NavigationTests : PageTest
     public async Task BrowserBack_ReturnsToPreviousPage()
     {
         await _homePage.OpenRecommendation("Bundesliga");
-        await Page.GoBackAsync();
+        await _homePage.GoBack();
 
-        Assert.That(Page.Url, Is.EqualTo(HomePage.Url),
+        Assert.That(_homePage.CurrentUrl, Is.EqualTo(HomePage.Url),
             "Expected the browser back button to return to the homepage.");
     }
 }
