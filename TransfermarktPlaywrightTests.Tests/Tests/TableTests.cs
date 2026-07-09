@@ -5,7 +5,7 @@ namespace TransfermarktPlaywrightTests.Tests.Tests;
 
 // Test 1: "Premier League Table on HomePage"
 [TestFixture]
-public class HomePageTests : PageTest
+public class TableTests : PageTest
 {
     private HomePage _homePage = null!;
 
@@ -27,10 +27,10 @@ public class HomePageTests : PageTest
     }
 
     [Test]
-    public async Task PremierLeagueClubOverview_HasConsistentDataForAllTwentyClubs()
+    public async Task PremierLeagueTable_HasConsistentDataForAllClubs()
     {
         var leaguePage = await _homePage.OpenRecommendation("Premier League");
-        
+
         // check that the league page is showing the expected season and number of clubs
         await leaguePage.FilterBySeason("25/26");
         await leaguePage.AssertClubCount(20);
