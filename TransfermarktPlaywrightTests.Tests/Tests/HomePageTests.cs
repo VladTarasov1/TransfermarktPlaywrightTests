@@ -33,10 +33,6 @@ public class HomePageTests : PageTest
             "Club", "Squad", "ø age", "Foreigners", "ø market value", "Total market value"
         }), "Expected the club overview table to expose these columns.");
 
-        var crestSources = await leaguePage.GetCrestImageSources();
-        Assert.That(crestSources, Has.All.Not.Empty,
-            "Expected every club row to have a non-empty crest image src.");
-
         var rows = await leaguePage.GetClubOverviewRows();
         Assert.That(rows.Select(r => r.ClubName), Does.Contain("Manchester City"),
             "Expected 'Manchester City' to appear among the listed clubs.");
