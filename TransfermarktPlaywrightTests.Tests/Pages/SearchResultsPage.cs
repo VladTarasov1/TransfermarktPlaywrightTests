@@ -1,5 +1,5 @@
 using Microsoft.Playwright;
-using TransfermarktPlaywrightTests.Tests.PageModels;
+using TransfermarktPlaywrightTests.Tests.Models.PageModels;
 using static Microsoft.Playwright.Assertions;
 
 namespace TransfermarktPlaywrightTests.Tests.Pages;

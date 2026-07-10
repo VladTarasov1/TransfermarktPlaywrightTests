@@ -1,4 +1,4 @@
-namespace TransfermarktPlaywrightTests.Tests.PageModels;
+namespace TransfermarktPlaywrightTests.Tests.Models.PageModels;
 
 // A single club's row in a league overview table.
 public record ClubRow(

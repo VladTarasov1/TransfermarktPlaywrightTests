@@ -1,4 +1,4 @@
-namespace TransfermarktPlaywrightTests.Tests.PageModels;
+namespace TransfermarktPlaywrightTests.Tests.Models.PageModels;
 
 // The league overview table's footer row, summarizing all clubs.
 public record ClubFooterTotals(

@@ -17,7 +17,9 @@ TransfermarktPlaywrightTests.Tests/
 │   ├── Components/       # Header.cs - the site header, shared across every page
 │   ├── BasePage.cs       # Page-agnostic utilities + Header, inherited by every page object
 │   ├── HomePage.cs, LoginPage.cs, LeaguePage.cs, SearchResultsPage.cs, ...
-├── PageModels/            # Plain data records returned by page objects (ClubRow, PlayerSearchResult, ...)
+├── Models/                # Flat data records - no ILocator/IPage leakage
+│   ├── PageModels/        # Returned by page objects (ClubRow, PlayerSearchResult, ...)
+│   └── ApiModels/         # Deserialized from raw API responses (CompetitionEntry, ...)
 ├── Helpers/                # Test-infrastructure helpers not tied to any one page (ConsentCookies.cs)
 ├── Tests/                  # NUnit test fixtures (one per feature area)
 └── playwright.runsettings  # Browser/headless configuration
@@ -84,6 +86,7 @@ Each feature area has its own NUnit fixture under `Tests/`:
 - **`SearchTests`** — quick-search results (matches, case-insensitivity, no-results state, navigating to a result)
 - **`NavigationTests`** — top nav links, hamburger menu recommendations, logo/back navigation
 - **`LoginTests`** — login form happy path, profile verification, username case-insensitivity, "remember me", validation errors (wrong/blank credentials)
+- **`ApiTests`** — a real REST request against one of Transfermarkt's own JSON endpoints, checking for server errors and response ordering
 
 ## MCP servers
 

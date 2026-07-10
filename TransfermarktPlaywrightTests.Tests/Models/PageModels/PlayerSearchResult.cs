@@ -1,4 +1,4 @@
-namespace TransfermarktPlaywrightTests.Tests.PageModels;
+namespace TransfermarktPlaywrightTests.Tests.Models.PageModels;
 
 // A single player hit from the quick-search results page.
 public record PlayerSearchResult(
