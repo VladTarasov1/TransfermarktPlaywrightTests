@@ -53,15 +53,14 @@ public class LoginTests : PageTest
             "Expected the profile settings page to be reachable and to display the logged-in username.");
     }
 
-    // TODO: not an expected behavior - make it's failing to highlight the issue
+    // BUG: usernames should be case-sensitive, but login succeeds regardless of casing.
     [Test]
-    public async Task Login_WithUsernameInDifferentCase_StillLogsUserIn()
+    public async Task Login_WithUsernameInDifferentCase_ShouldNotLogUserIn()
     {
         await _loginPage.Login(TestUsername.ToUpperInvariant(), TestPassword);
 
-        Assert.That(_homePage.CurrentUrl, Is.EqualTo(HomePage.Url),
-            "Expected login to succeed even when the username's case doesn't match how it was registered.");
-        await _homePage.Header.WaitForLoggedIn();
+        Assert.That(_homePage.CurrentUrl, Is.Not.EqualTo(HomePage.Url),
+            "Expected a username with different casing to be rejected, not silently logged in.");
     }
 
     [TestCase(true)]
