@@ -59,8 +59,8 @@ public class LoginTests : PageTest
     {
         await _loginPage.Login(TestUsername.ToUpperInvariant(), TestPassword);
 
-        Assert.That(_homePage.CurrentUrl, Is.Not.EqualTo(HomePage.Url),
-            "Expected a username with different casing to be rejected, not silently logged in.");
+        Assert.That(_homePage.CurrentUrl, Is.EqualTo(LoginPage.Url),
+            "Expected a username with different casing to be rejected, staying on the login page.");
     }
 
     [TestCase(true)]
