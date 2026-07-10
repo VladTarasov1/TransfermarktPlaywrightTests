@@ -34,6 +34,7 @@ public class LoginTests : PageTest
         await ConsentCookies.Seed(Context);
         _homePage = new HomePage(Page);
         await _homePage.Navigate();
+        await ConsentCookies.EnsureAccepted(Page);
         _loginPage = await _homePage.OpenLogin();
     }
 
@@ -52,7 +53,7 @@ public class LoginTests : PageTest
             "Expected the profile settings page to be reachable and to display the logged-in username.");
     }
 
-    // TODO: not an expected behavior
+    // TODO: not an expected behavior - make it's failing to highlight the issue
     [Test]
     public async Task Login_WithUsernameInDifferentCase_StillLogsUserIn()
     {

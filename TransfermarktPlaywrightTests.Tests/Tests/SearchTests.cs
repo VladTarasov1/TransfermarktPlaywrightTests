@@ -16,6 +16,7 @@ public class SearchTests : PageTest
         await ConsentCookies.Seed(Context);
         _homePage = new HomePage(Page);
         await _homePage.Navigate();
+        await ConsentCookies.EnsureAccepted(Page);
     }
 
     [Test]

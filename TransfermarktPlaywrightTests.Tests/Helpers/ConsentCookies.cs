@@ -15,6 +15,9 @@ public static class ConsentCookies
     // Record ID marking this visitor as already having made a consent choice.
     private const string ConsentUuidCookieValue = "c24608b8-bfa1-47d9-867c-4722c456a4e0_58";
 
+    // Sourcepoint's consent banner iframe; the numeric suffix rotates per campaign, so match by prefix.
+    private static ILocator BannerIframe(IPage page) => page.Locator("iframe[id^='sp_message_iframe_']");
+
     // Call once per test, before the first navigation (e.g. top of [SetUp]).
     public static Task Seed(IBrowserContext context)
     {
@@ -25,5 +28,15 @@ public static class ConsentCookies
             new Cookie { Name = "euconsent-v2", Value = EuConsentCookieValue, Domain = CookieDomain, Path = "/", Expires = expires },
             new Cookie { Name = "consentUUID", Value = ConsentUuidCookieValue, Domain = CookieDomain, Path = "/", Expires = expires },
         ]);
+    }
+
+    // Call once per test, right after the first navigation - fails if the seeded cookies didn't suppress the banner.
+    public static async Task EnsureAccepted(IPage page)
+    {
+        if (await BannerIframe(page).IsVisibleAsync())
+        {
+            throw new InvalidOperationException(
+                "Cookie-consent banner is showing despite seeded cookies - the values in ConsentCookies are stale. Re-capture 'euconsent-v2' and 'consentUUID' from a real 'Accept & continue' click.");
+        }
     }
 }

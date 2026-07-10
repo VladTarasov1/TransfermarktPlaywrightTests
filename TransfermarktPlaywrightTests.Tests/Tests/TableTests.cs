@@ -25,6 +25,7 @@ public class TableTests : PageTest
         await ConsentCookies.Seed(Context);
         _homePage = new HomePage(Page);
         await _homePage.Navigate();
+        await ConsentCookies.EnsureAccepted(Page);
     }
 
     [Test]
