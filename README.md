@@ -85,6 +85,15 @@ Each feature area has its own NUnit fixture under `Tests/`:
 - **`NavigationTests`** — top nav links, hamburger menu recommendations, logo/back navigation
 - **`LoginTests`** — login form happy path, profile verification, username case-insensitivity, "remember me", validation errors (wrong/blank credentials)
 
+## MCP servers
+
+`.mcp.json` configures two project-scoped MCP servers for AI-assisted development (e.g. Claude Code) — approve them when prompted on session start:
+
+- **`playwright`** ([`@playwright/mcp`](https://github.com/microsoft/playwright-mcp)) — semantic browser automation (navigate, click, fill, snapshot, read cookies). Useful for exploring the live site's DOM/shadow-DOM structure when writing or debugging page objects.
+- **`chrome-devtools`** ([`chrome-devtools-mcp`](https://github.com/ChromeDevTools/chrome-devtools-mcp)) — CDP-level inspection (network requests, console messages, performance traces). Requires Node ≥20.19.0 LTS.
+
+Both are optional.
+
 ## Notes
 
 - These tests run against the **live site**, not a mock — occasional failures unrelated to the code under test (e.g. a transient `504 Gateway Time-out`) can happen and are worth re-running before assuming a regression.
