@@ -23,7 +23,7 @@ public class NavigationTests : PageTest
     [TestCase("TRANSFERS & RUMOURS", "TRANSFERS & RUMOURS | Transfermarkt")]
     public async Task TopNavLink_NavigatesToExpectedSection(string linkName, string expectedTitle)
     {
-        await _homePage.NavigateViaTopNav(linkName);
+        await _homePage.Header.NavigateViaTopNav(linkName);
 
         Assert.That(await _homePage.GetTitle(), Is.EqualTo(expectedTitle),
             $"Expected the '{linkName}' nav link to navigate to a page titled '{expectedTitle}'.");
@@ -32,7 +32,7 @@ public class NavigationTests : PageTest
     [Test]
     public async Task HamburgerMenu_RecommendationLink_NavigatesToCompetitionPage()
     {
-        var leaguePage = await _homePage.OpenRecommendation("Bundesliga");
+        var leaguePage = await _homePage.Header.OpenRecommendation("Bundesliga");
 
         Assert.That(leaguePage.CurrentUrl, Does.Contain("/bundesliga/"),
             "Expected the 'Bundesliga' recommendation link to navigate to the Bundesliga competition page.");
@@ -42,8 +42,8 @@ public class NavigationTests : PageTest
     [Test]
     public async Task Logo_ReturnsToHomepageFromDeepPage()
     {
-        var leaguePage = await _homePage.OpenRecommendation("Bundesliga");
-        var homePage = await leaguePage.OpenHomePageFromLogo();
+        var leaguePage = await _homePage.Header.OpenRecommendation("Bundesliga");
+        var homePage = await leaguePage.Header.OpenHomePage();
 
         Assert.That(homePage.CurrentUrl, Is.EqualTo(HomePage.Url),
             "Expected clicking the logo from a competition page to return to the homepage.");
@@ -52,7 +52,7 @@ public class NavigationTests : PageTest
     [Test]
     public async Task BrowserBack_ReturnsToPreviousPage()
     {
-        await _homePage.OpenRecommendation("Bundesliga");
+        await _homePage.Header.OpenRecommendation("Bundesliga");
         await _homePage.GoBack();
 
         Assert.That(_homePage.CurrentUrl, Is.EqualTo(HomePage.Url),

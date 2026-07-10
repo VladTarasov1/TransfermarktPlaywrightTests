@@ -43,9 +43,9 @@ public class LoginTests : PageTest
 
         Assert.That(_homePage.CurrentUrl, Is.EqualTo(HomePage.Url),
             "Expected a successful login to redirect to the homepage.");
-        await _homePage.WaitForLoggedIn();
+        await _homePage.Header.WaitForLoggedIn();
 
-        var profilePage = await _homePage.OpenProfileSettings();
+        var profilePage = await _homePage.Header.OpenProfileSettings();
 
         Assert.That(await profilePage.GetTitle(), Is.EqualTo($"{TestUsername} - Profile settings | Transfermarkt"),
             "Expected the profile settings page to be reachable and to display the logged-in username.");
@@ -59,7 +59,7 @@ public class LoginTests : PageTest
 
         Assert.That(_homePage.CurrentUrl, Is.EqualTo(HomePage.Url),
             "Expected login to succeed even when the username's case doesn't match how it was registered.");
-        await _homePage.WaitForLoggedIn();
+        await _homePage.Header.WaitForLoggedIn();
     }
 
     [TestCase(true)]
@@ -67,7 +67,7 @@ public class LoginTests : PageTest
     public async Task Login_RememberMe_ControlsSessionPersistence(bool rememberMe)
     {
         await _loginPage.Login(TestUsername, TestPassword, rememberMe);
-        await _homePage.WaitForLoggedIn();
+        await _homePage.Header.WaitForLoggedIn();
 
         Assert.That(await _loginPage.HasPersistentSession(), Is.EqualTo(rememberMe),
             $"Expected the session cookie to {(rememberMe ? "persist" : "be session-only")} when 'Remember me' is {(rememberMe ? "checked" : "unchecked")}.");

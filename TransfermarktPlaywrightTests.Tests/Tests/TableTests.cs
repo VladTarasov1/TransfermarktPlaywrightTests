@@ -29,7 +29,7 @@ public class TableTests : PageTest
     [Test]
     public async Task PremierLeagueTable_HasConsistentDataForAllClubs()
     {
-        var leaguePage = await _homePage.OpenRecommendation("Premier League");
+        var leaguePage = await _homePage.Header.OpenRecommendation("Premier League");
 
         // check that the league page is showing the expected season and number of clubs
         await leaguePage.FilterBySeason("25/26");

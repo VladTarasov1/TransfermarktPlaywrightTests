@@ -20,7 +20,7 @@ public class SearchTests : PageTest
     [Test]
     public async Task Search_WithResults_ReturnsMatchesAndAllowsNavigation()
     {
-        var resultsPage = await _homePage.Search("Messi");
+        var resultsPage = await _homePage.Header.Search("Messi");
         await resultsPage.WaitForResults();
 
         // check results not empty
@@ -61,7 +61,7 @@ public class SearchTests : PageTest
     [Test]
     public async Task Search_IsCaseInsensitive()
     {
-        var resultsPage = await _homePage.Search("messi");
+        var resultsPage = await _homePage.Header.Search("messi");
         await resultsPage.WaitForResults();
 
         var players = await resultsPage.GetPlayerResults();
@@ -72,7 +72,7 @@ public class SearchTests : PageTest
     [Test]
     public async Task Search_WithNoMatches_ShowsNothingFoundGuidance()
     {
-        var resultsPage = await _homePage.Search("NonExistentQueryWithNoMatches");
+        var resultsPage = await _homePage.Header.Search("NonExistentQueryWithNoMatches");
 
         await resultsPage.WaitForNothingFound();
         Assert.That(await resultsPage.HasNoResults(), Is.True,
