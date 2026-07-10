@@ -1,4 +1,5 @@
 using Microsoft.Playwright;
+using static Microsoft.Playwright.Assertions;
 
 namespace TransfermarktPlaywrightTests.Tests.Pages;
 
@@ -11,6 +12,11 @@ public abstract class BasePage(IPage page)
              .GetByRole(AriaRole.Button, new() { Name = "Accept & continue" });
 
     private ILocator MainLogo => _page.Locator("a.tm-header__logo");
+    
+    private ILocator MyProfileButton => _page.Locator("button[title='My profile']");
+
+    private ILocator ProfileOptionLink =>
+        _page.GetByRole(AriaRole.Link, new() { Name = "Profile", Exact = true });
 
     public string CurrentUrl => _page.Url;
 
@@ -46,5 +52,25 @@ public abstract class BasePage(IPage page)
         await DismissCookieBannerIfShown();
 
         return new HomePage(_page);
+    }
+
+    // Waits for the header to show the logged-in "My profile" control.
+    public async Task WaitForLoggedIn()
+    {
+        await Expect(MyProfileButton).ToBeVisibleAsync();
+    }
+
+    // Opens the "My profile" dropdown and follows its "Profile" link to the profile settings page,
+    // whose title embeds the logged-in username.
+    public async Task<ProfileSettingsPage> OpenProfileSettings()
+    {
+        await DismissCookieBannerIfShown();
+        await MyProfileButton.ClickAsync();
+        await DismissCookieBannerIfShown();
+        await ProfileOptionLink.ClickAsync();
+        await _page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+        await DismissCookieBannerIfShown();
+
+        return new ProfileSettingsPage(_page);
     }
 }

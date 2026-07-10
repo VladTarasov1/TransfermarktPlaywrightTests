@@ -46,6 +46,17 @@ public class HomePage(IPage page) : BasePage(page)
         return clubsPage;
     }
 
+    // Opens the login form. The header's login control is a plain shadow-DOM button with no
+    // href/navigation wired to it that Playwright can drive, so this navigates directly instead.
+    public async Task<LoginPage> OpenLogin()
+    {
+        await _page.GotoAsync(LoginPage.Url);
+        await _page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+        await DismissCookieBannerIfShown();
+
+        return new LoginPage(_page);
+    }
+
     // Submits a quick-search query via the header search box and returns the results page.
     public async Task<SearchResultsPage> Search(string query)
     {
