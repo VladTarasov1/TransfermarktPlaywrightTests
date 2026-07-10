@@ -4,19 +4,31 @@ using static Microsoft.Playwright.Assertions;
 
 namespace TransfermarktPlaywrightTests.Tests.Pages;
 
-// Represents a league's page with a table.
+// Represents each country's league page with a table.
 public class LeaguePage(IPage page) : BasePage(page)
 {
+    // The club overview table.
     private ILocator Table => _page.Locator(".responsive-table table.items");
+
+    // The table's column header cells.
     private ILocator ColumnHeaders => Table.Locator("thead th:not(.hide)");
+
+    // The table's club rows.
     private ILocator Rows => Table.Locator("tbody tr");
+
+    // The table's footer summary cells.
     private ILocator FooterSummaryCells => Table.Locator("tfoot td");
+
+    // The season-picker dropdown.
     private ILocator SeasonDropdown => _page.Locator("select[name='saison_id'] + div.chzn-container");
+
+    // Submits the season filter form.
     private ILocator ShowButton => _page.Locator("input[type='submit'][value='Show']");
+
+    // The sortable link in a column header, e.g. "ø age".
     private ILocator SortLink(string columnName) => Table.Locator("thead th a.sort-link", new() { HasText = columnName });
 
-    // Opens the dropdown, picks the season, and submits the form.
-    // Season must match the dropdown's display text exactly, e.g. "25/26".
+    // Opens the season dropdown, picks the given season (its display text must match exactly, e.g. "25/26"), and submits the form.
     public async Task FilterBySeason(string season)
     {
         await SeasonDropdown.Locator("a.chzn-single").ClickAsync();
@@ -25,11 +37,7 @@ public class LeaguePage(IPage page) : BasePage(page)
         await Expect(Rows.First).ToBeVisibleAsync();
     }
 
-    /* Clicks the given column header to sort by that column; the site defaults to descending order.
-       The table refreshes via AJAX without changing the URL. Waiting for the sort request's response
-       isn't enough on its own - the DOM can still be mid-swap when the response arrives - so we also
-       wait for the pre-click rows to actually detach from the DOM before returning.
-       columnName must match the column header text exactly, e.g. "ø age". */
+    // Sorts by the given column (e.g. "ø age"); waits for the old rows to detach.
     public async Task SortByColumn(string columnName)
     {
         var sortLink = SortLink(columnName);

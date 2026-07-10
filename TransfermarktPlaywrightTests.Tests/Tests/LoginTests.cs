@@ -1,6 +1,7 @@
 using DotNetEnv;
 using Microsoft.Playwright.NUnit;
 using TransfermarktPlaywrightTests.Tests.Pages;
+using TransfermarktPlaywrightTests.Tests.Helpers;
 
 namespace TransfermarktPlaywrightTests.Tests.Tests;
 
@@ -30,9 +31,9 @@ public class LoginTests : PageTest
     [SetUp]
     public async Task SetUp()
     {
+        await ConsentCookies.Seed(Context);
         _homePage = new HomePage(Page);
         await _homePage.Navigate();
-        await _homePage.DismissCookieBanner();
         _loginPage = await _homePage.OpenLogin();
     }
 

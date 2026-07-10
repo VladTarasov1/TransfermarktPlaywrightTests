@@ -2,22 +2,16 @@ using Microsoft.Playwright;
 
 namespace TransfermarktPlaywrightTests.Tests.Pages;
 
+// Base page, inherited by every page object.
 public abstract class BasePage(IPage page)
 {
     protected readonly IPage _page = page;
 
-    private readonly Components.CookieBanner _cookieBanner = new(page);
-
+    // The site header, present on every page.
     public Components.Header Header { get; } = new(page);
 
+    // The browser's current URL.
     public string CurrentUrl => _page.Url;
-
-    // Dismisses the cookie/consent banner if present.
-    public Task DismissCookieBanner() => _cookieBanner.Dismiss();
-
-    // Dismisses the cookie/consent banner if it has reappeared after a subsequent page navigation,
-    // without waiting when it doesn't - unlike DismissCookieBanner, its presence here isn't guaranteed.
-    public Task DismissCookieBannerIfShown() => _cookieBanner.DismissIfShown();
 
     // Returns the current page's title.
     public Task<string> GetTitle() => _page.TitleAsync();

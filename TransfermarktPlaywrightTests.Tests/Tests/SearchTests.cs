@@ -1,5 +1,6 @@
 using Microsoft.Playwright.NUnit;
 using TransfermarktPlaywrightTests.Tests.Pages;
+using TransfermarktPlaywrightTests.Tests.Helpers;
 
 namespace TransfermarktPlaywrightTests.Tests.Tests;
 
@@ -12,9 +13,9 @@ public class SearchTests : PageTest
     [SetUp]
     public async Task SetUp()
     {
+        await ConsentCookies.Seed(Context);
         _homePage = new HomePage(Page);
         await _homePage.Navigate();
-        await _homePage.DismissCookieBanner();
     }
 
     [Test]
