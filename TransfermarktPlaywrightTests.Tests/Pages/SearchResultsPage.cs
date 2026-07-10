@@ -23,7 +23,7 @@ public class SearchResultsPage(IPage page) : BasePage(page)
     private ILocator NothingFoundHeading => _page.GetByText("Nothing found?");
 
     // Player name links within the players results table.
-    private ILocator PlayerNameLinks => PlayersTable.Locator("tbody tr td.hauptlink a");
+    private ILocator PlayerNameLinks => PlayersTable.Locator("tbody tr a[href*='/profil/spieler/']");
 
     // True when no result tables were rendered for the query.
     public async Task<bool> HasNoResults()
