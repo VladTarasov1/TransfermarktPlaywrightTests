@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.Playwright;
 using TransfermarktPlaywrightTests.Tests.Models.PageModels;
 using static Microsoft.Playwright.Assertions;
@@ -33,7 +34,11 @@ public class LeaguePage(IPage page) : BasePage(page)
     {
         await SeasonDropdown.Locator("a.chzn-single").ClickAsync();
         await SeasonDropdown.Locator("li.active-result", new() { HasText = season }).ClickAsync();
+
+        // Submitting navigates to a "saison_id" URL - season id. Added due flakiness of site.
         await ShowButton.ClickAsync();
+        await _page.WaitForURLAsync(url => url.Contains("saison_id"),
+            new PageWaitForURLOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
         await Expect(Rows.First).ToBeVisibleAsync();
     }
 
@@ -86,7 +91,7 @@ public class LeaguePage(IPage page) : BasePage(page)
                 ClubName: (await nameLink.InnerTextAsync()).Trim(),
                 ClubProfileUrl: await nameLink.GetAttributeAsync("href") ?? string.Empty,
                 SquadSize: int.Parse((await cells.Nth(2).InnerTextAsync()).Trim()),
-                AverageAge: double.Parse((await cells.Nth(3).InnerTextAsync()).Trim()),
+                AverageAge: double.Parse((await cells.Nth(3).InnerTextAsync()).Trim(), CultureInfo.InvariantCulture),
                 ForeignersCount: int.Parse((await cells.Nth(4).InnerTextAsync()).Trim()),
                 AverageMarketValueEur: ParseMarketValue(await cells.Nth(5).InnerTextAsync()),
                 TotalMarketValueEur: ParseMarketValue(await cells.Nth(6).InnerTextAsync())));
@@ -102,7 +107,7 @@ public class LeaguePage(IPage page) : BasePage(page)
 
         return new ClubFooterTotals(
             SquadTotal: int.Parse((await FooterSummaryCells.Nth(2).InnerTextAsync()).Trim()),
-            AverageAge: double.Parse(ageText.Split(' ')[0]),
+            AverageAge: double.Parse(ageText.Split(' ')[0], CultureInfo.InvariantCulture),
             ForeignersTotal: int.Parse((await FooterSummaryCells.Nth(4).InnerTextAsync()).Trim()),
             AverageMarketValueEur: ParseMarketValue(await FooterSummaryCells.Nth(5).InnerTextAsync()),
             TotalMarketValueEur: ParseMarketValue(await FooterSummaryCells.Nth(6).InnerTextAsync()));
@@ -133,6 +138,6 @@ public class LeaguePage(IPage page) : BasePage(page)
             multiplier = 1m;
         }
 
-        return decimal.Parse(text) * multiplier;
+        return decimal.Parse(text, CultureInfo.InvariantCulture) * multiplier;
     }
 }
