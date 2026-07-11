@@ -1,28 +1,13 @@
-using Microsoft.Playwright.NUnit;
-using TransfermarktPlaywrightTests.Tests.Pages;
-using TransfermarktPlaywrightTests.Tests.Helpers;
-
 namespace TransfermarktPlaywrightTests.Tests.Tests;
 
 // "Search Engine" tests
 [TestFixture]
-public class SearchTests : PageTest
+public class SearchTests : BaseTest
 {
-    private HomePage _homePage = null!;
-
-    [SetUp]
-    public async Task SetUp()
-    {
-        await ConsentCookies.Seed(Context);
-        _homePage = new HomePage(Page);
-        await _homePage.Navigate();
-        await ConsentCookies.EnsureAccepted(Page);
-    }
-
     [Test]
     public async Task Search_WithResults_ReturnsMatchesAndAllowsNavigation()
     {
-        var resultsPage = await _homePage.Header.Search("Messi");
+        var resultsPage = await HomePage.Header.Search("Messi");
         await resultsPage.WaitForResults();
 
         // check results not empty
@@ -63,7 +48,7 @@ public class SearchTests : PageTest
     [Test]
     public async Task Search_IsCaseInsensitive()
     {
-        var resultsPage = await _homePage.Header.Search("messi");
+        var resultsPage = await HomePage.Header.Search("messi");
         await resultsPage.WaitForResults();
 
         var players = await resultsPage.GetPlayerResults();
@@ -74,7 +59,7 @@ public class SearchTests : PageTest
     [Test]
     public async Task Search_WithNoMatches_ShowsNothingFoundGuidance()
     {
-        var resultsPage = await _homePage.Header.Search("NonExistentQueryWithNoMatches");
+        var resultsPage = await HomePage.Header.Search("NonExistentQueryWithNoMatches");
 
         await resultsPage.WaitForNothingFound();
         Assert.That(await resultsPage.HasNoResults(), Is.True,

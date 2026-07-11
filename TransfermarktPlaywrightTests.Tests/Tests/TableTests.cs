@@ -1,15 +1,9 @@
-using Microsoft.Playwright.NUnit;
-using TransfermarktPlaywrightTests.Tests.Pages;
-using TransfermarktPlaywrightTests.Tests.Helpers;
-
 namespace TransfermarktPlaywrightTests.Tests.Tests;
 
 // League table tests
 [TestFixture]
-public class TableTests : PageTest
+public class TableTests : BaseTest
 {
-    private HomePage _homePage = null!;
-
     private static readonly string[] ExpectedColumnHeaders =
         ["Club", "Squad", "ø age", "Foreigners", "ø market value", "Total market value"];
     private static readonly string[] ExpectedClubs2526 =
@@ -19,19 +13,10 @@ public class TableTests : PageTest
          "Nottingham Forest", "Sunderland AFC", "Tottenham Hotspur",
          "West Ham United", "Wolverhampton Wanderers"];
 
-    [SetUp]
-    public async Task SetUp()
-    {
-        await ConsentCookies.Seed(Context);
-        _homePage = new HomePage(Page);
-        await _homePage.Navigate();
-        await ConsentCookies.EnsureAccepted(Page);
-    }
-
     [Test]
     public async Task PremierLeagueTable_HasConsistentDataForAllClubs()
     {
-        var leaguePage = await _homePage.Header.OpenRecommendation("Premier League");
+        var leaguePage = await HomePage.Header.OpenRecommendation("Premier League");
 
         // check that the league page is showing the expected season and number of clubs
         await leaguePage.FilterBySeason("25/26");

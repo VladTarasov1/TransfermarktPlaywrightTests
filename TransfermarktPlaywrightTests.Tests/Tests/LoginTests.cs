@@ -1,18 +1,15 @@
 using DotNetEnv;
-using Microsoft.Playwright.NUnit;
 using TransfermarktPlaywrightTests.Tests.Pages;
-using TransfermarktPlaywrightTests.Tests.Helpers;
 
 namespace TransfermarktPlaywrightTests.Tests.Tests;
 
 // "Login form" tests
 [TestFixture]
-public class LoginTests : PageTest
+public class LoginTests : BaseTest
 {
     private static string TestUsername = null!;
     private static string TestPassword = null!;
 
-    private HomePage _homePage = null!;
     private LoginPage _loginPage = null!;
 
     [OneTimeSetUp]
@@ -28,14 +25,11 @@ public class LoginTests : PageTest
                 "TM_TEST_PASSWORD not set.");
     }
 
+    // Runs after the base fixture's OpenHomePage.
     [SetUp]
-    public async Task SetUp()
+    public async Task OpenLoginOverlay()
     {
-        await ConsentCookies.Seed(Context);
-        _homePage = new HomePage(Page);
-        await _homePage.Navigate();
-        await ConsentCookies.EnsureAccepted(Page);
-        _loginPage = await _homePage.Header.OpenLogin();
+        _loginPage = await HomePage.Header.OpenLogin();
     }
 
     [Test]
@@ -43,8 +37,8 @@ public class LoginTests : PageTest
     {
         await _loginPage.Login(TestUsername, TestPassword);
 
-        await _homePage.Header.WaitForLoggedIn();
-        var profilePage = await _homePage.Header.OpenProfileSettings();
+        await HomePage.Header.WaitForLoggedIn();
+        var profilePage = await HomePage.Header.OpenProfileSettings();
 
         Assert.That(await profilePage.GetTitle(), Is.EqualTo($"{TestUsername} - Profile settings | Transfermarkt"),
             "Expected the profile settings page to be reachable and to display the logged-in username.");
@@ -56,7 +50,7 @@ public class LoginTests : PageTest
     {
         await _loginPage.Login(TestUsername.ToUpperInvariant(), TestPassword);
 
-        Assert.That(await _homePage.Header.IsLoggedIn(), Is.False,
+        Assert.That(await HomePage.Header.IsLoggedIn(), Is.False,
             "Expected a username with different casing to be rejected.");
     }
 
@@ -65,7 +59,7 @@ public class LoginTests : PageTest
     public async Task Login_With_RememberMe_Option(bool rememberMe)
     {
         await _loginPage.Login(TestUsername, TestPassword, rememberMe);
-        await _homePage.Header.WaitForLoggedIn();
+        await HomePage.Header.WaitForLoggedIn();
 
         Assert.That(await _loginPage.HasPersistentSession(), Is.EqualTo(rememberMe),
             $"Expected the session cookie to persist only when 'Remember me' is checked (rememberMe={rememberMe}).");
@@ -77,7 +71,7 @@ public class LoginTests : PageTest
         await _loginPage.Login("WrongUser1", "WrongPass1!");
 
         var error = await _loginPage.GetErrorMessage();
-        var isLoggedIn = await _homePage.Header.IsLoggedIn();
+        var isLoggedIn = await HomePage.Header.IsLoggedIn();
 
         Assert.Multiple(() =>
         {

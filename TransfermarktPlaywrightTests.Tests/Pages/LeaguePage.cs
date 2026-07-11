@@ -23,6 +23,12 @@ public class LeaguePage(IPage page) : BasePage(page)
     // The season-picker dropdown.
     private ILocator SeasonDropdown => _page.Locator("select[name='saison_id'] + div.chzn-container");
 
+    // Season dropdown box, clicking opens options.
+    private ILocator SeasonDropdownBox => SeasonDropdown.Locator("a.chzn-single");
+
+    // A season option in the opened dropdown, e.g. "25/26".
+    private ILocator SeasonOption(string season) => SeasonDropdown.Locator("li.active-result", new() { HasText = season });
+
     // Submits the season filter form.
     private ILocator ShowButton => _page.Locator("input[type='submit'][value='Show']");
 
@@ -32,8 +38,8 @@ public class LeaguePage(IPage page) : BasePage(page)
     // Opens the season dropdown, picks the given season (its display text must match exactly, e.g. "25/26"), and submits the form.
     public async Task FilterBySeason(string season)
     {
-        await SeasonDropdown.Locator("a.chzn-single").ClickAsync();
-        await SeasonDropdown.Locator("li.active-result", new() { HasText = season }).ClickAsync();
+        await SeasonDropdownBox.ClickAsync();
+        await SeasonOption(season).ClickAsync();
 
         // Submitting navigates to a "saison_id" URL - season id. Added due flakiness of site.
         await ShowButton.ClickAsync();

@@ -11,7 +11,7 @@ namespace TransfermarktPlaywrightTests.Tests.Tests;
 [TestFixture]
 public class ApiTests : PageTest
 {
-    // Transfermarkt's own JSON endpoint backing the "England" quickselect competitions list.
+    // Transfermarkt's "England" quickselect competitions list.
     private const string EnglishCompetitionsUrl = "https://www.transfermarkt.com/quickselect/competitions/189";
 
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };

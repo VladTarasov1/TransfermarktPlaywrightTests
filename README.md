@@ -21,7 +21,7 @@ TransfermarktPlaywrightTests.Tests/
 │   ├── PageModels/        # Returned by page objects (ClubRow, PlayerSearchResult, ...)
 │   └── ApiModels/         # Deserialized from raw API responses (CompetitionEntry, ...)
 ├── Helpers/                # Test-infrastructure helpers not tied to any one page (ConsentCookies.cs)
-├── Tests/                  # NUnit test fixtures (one per feature area)
+├── Tests/                  # NUnit test fixtures (one per feature area; BaseTest.cs holds the shared per-test setup)
 └── playwright.runsettings  # Browser/headless configuration
 ```
 
@@ -70,7 +70,7 @@ dotnet test --filter "FullyQualifiedName~LoginTests"
 
 Run a single test:
 ```
-dotnet test --filter "Login_WithValidCredentials_LogsUserIn"
+dotnet test --filter "Login_WithValidCredentials"
 ```
 
 Browser behavior (headless/headed, browser engine) is configured in `TransfermarktPlaywrightTests.Tests/playwright.runsettings` and picked up automatically — pass it explicitly if your tooling doesn't:
