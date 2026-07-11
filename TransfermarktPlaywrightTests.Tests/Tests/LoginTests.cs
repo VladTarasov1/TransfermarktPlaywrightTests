@@ -44,7 +44,7 @@ public class LoginTests : BaseTest
             "Expected the profile settings page to be reachable and to display the logged-in username.");
     }
 
-    // BUG: usernames should be case-sensitive, but login succeeds regardless of casing.
+    // BUG: usernames should be case-sensitive - need to doublecheck requirements
     [Test]
     public async Task Case_Sensitive_Login()
     {

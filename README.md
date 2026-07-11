@@ -99,5 +99,7 @@ Both are optional.
 
 ## Notes
 
+- **One test fails by design:** `LoginTests.Case_Sensitive_Login` documents a bug on the live site — Transfermarkt accepts a username in *any* casing (e.g. `TESTUSER` logs in as `TestUser`). The test asserts the secure, expected behavior (mismatched casing rejected), so it stays red as a standing record of the bug. Ideally need to doublecheck requirements if this intended.
+
 - These tests run against the **live site**, not a mock — occasional failures unrelated to the code under test (e.g. a transient `504 Gateway Time-out`) can happen and are worth re-running before assuming a regression.
 - The Sourcepoint cookie-consent banner is suppressed by seeding cookies (`Helpers/ConsentCookies.cs`) rather than clicking through it, to avoid a flaky UI interaction.
