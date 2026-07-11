@@ -85,8 +85,8 @@ Each feature area has its own NUnit fixture under `Tests/`:
 - **`TableTests`** — Premier League table data (columns, club rows, sorting, footer totals)
 - **`SearchTests`** — quick-search results (matches, case-insensitivity, no-results state, navigating to a result)
 - **`NavigationTests`** — top nav links, hamburger menu recommendations, logo/back navigation
-- **`LoginTests`** — login form happy path, profile verification, username case-insensitivity, "remember me", validation errors (wrong/blank credentials)
-- **`ApiTests`** — a real REST request against one of Transfermarkt's own JSON endpoints, checking for server errors and response ordering
+- **`LoginTests`** — login overlay happy path, profile verification, username case-insensitivity, "remember me", wrong-credentials error, blank-field submit disabling
+- **`ApiTests`** — a real REST request against one of Transfermarkt's own JSON endpoints (server errors, response ordering), plus a browser-driven check that a lazy-loaded table-sort request returns no server error
 
 ## MCP servers
 

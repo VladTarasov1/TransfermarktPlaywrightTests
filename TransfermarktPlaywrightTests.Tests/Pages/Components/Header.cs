@@ -26,7 +26,10 @@ public class Header(IPage page)
     private ILocator TopNavLink(string linkName) =>
         page.Locator("nav.main-navbar").GetByRole(AriaRole.Link, new() { Name = linkName, Exact = true });
 
-    // "Log in" when logged out, "My profile" once authenticated.
+    // "Log in" button, shown only while user not logged in.
+    private ILocator LoginButton => page.Locator("button[title='Log in']");
+
+    // "My profile" button, shown only once authenticated.
     private ILocator MyProfileButton => page.Locator("button[title='My profile']");
 
     // Clicking MyProfileButton opens a dropdown panel containing this link.
@@ -73,10 +76,31 @@ public class Header(IPage page)
         return new SearchResultsPage(page);
     }
 
+    // Clicks "Log in" to open the login overlay.
+    public async Task<LoginPage> OpenLogin()
+    {
+        await LoginButton.ClickAsync();
+        return new LoginPage(page);
+    }
+
     // Waits for the header to show the logged-in "My profile" control.
     public async Task WaitForLoggedIn()
     {
         await Expect(MyProfileButton).ToBeVisibleAsync();
+    }
+
+    // Waits for "My profile" option to show after a login attempt, false if it doesn't show - login failed.
+    public async Task<bool> IsLoggedIn()
+    {
+        try
+        {
+            await Expect(MyProfileButton).ToBeVisibleAsync();
+            return true;
+        }
+        catch (PlaywrightException)
+        {
+            return false;
+        }
     }
 
     // Opens the "My profile" dropdown and follows its "Profile" link to the profile settings page.

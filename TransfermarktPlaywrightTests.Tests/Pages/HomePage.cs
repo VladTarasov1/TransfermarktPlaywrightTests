@@ -13,13 +13,4 @@ public class HomePage(IPage page) : BasePage(page)
     {
         await _page.GotoAsync(Url);
     }
-
-    // Opens the login form directly by URL.
-    public async Task<LoginPage> OpenLogin()
-    {
-        await _page.GotoAsync(LoginPage.Url);
-        await _page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
-
-        return new LoginPage(_page);
-    }
 }

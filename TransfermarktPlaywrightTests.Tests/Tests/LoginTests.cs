@@ -22,10 +22,10 @@ public class LoginTests : PageTest
 
         TestUsername = Environment.GetEnvironmentVariable("TM_TEST_USERNAME")
             ?? throw new InvalidOperationException(
-                "TM_TEST_USERNAME not set. Copy .env.example to .env at the repo root and fill in the test account credentials.");
+                "TM_TEST_USERNAME not set.");
         TestPassword = Environment.GetEnvironmentVariable("TM_TEST_PASSWORD")
             ?? throw new InvalidOperationException(
-                "TM_TEST_PASSWORD not set. Copy .env.example to .env at the repo root and fill in the test account credentials.");
+                "TM_TEST_PASSWORD not set.");
     }
 
     [SetUp]
@@ -35,18 +35,15 @@ public class LoginTests : PageTest
         _homePage = new HomePage(Page);
         await _homePage.Navigate();
         await ConsentCookies.EnsureAccepted(Page);
-        _loginPage = await _homePage.OpenLogin();
+        _loginPage = await _homePage.Header.OpenLogin();
     }
 
     [Test]
-    public async Task Login_WithValidCredentials_LogsUserIn()
+    public async Task Login_WithValidCredentials()
     {
         await _loginPage.Login(TestUsername, TestPassword);
 
-        Assert.That(_homePage.CurrentUrl, Is.EqualTo(HomePage.Url),
-            "Expected a successful login to redirect to the homepage.");
         await _homePage.Header.WaitForLoggedIn();
-
         var profilePage = await _homePage.Header.OpenProfileSettings();
 
         Assert.That(await profilePage.GetTitle(), Is.EqualTo($"{TestUsername} - Profile settings | Transfermarkt"),
@@ -55,52 +52,51 @@ public class LoginTests : PageTest
 
     // BUG: usernames should be case-sensitive, but login succeeds regardless of casing.
     [Test]
-    public async Task Login_WithUsernameInDifferentCase_ShouldNotLogUserIn()
+    public async Task Case_Sensitive_Login()
     {
         await _loginPage.Login(TestUsername.ToUpperInvariant(), TestPassword);
 
-        Assert.That(_homePage.CurrentUrl, Is.EqualTo(LoginPage.Url),
-            "Expected a username with different casing to be rejected, staying on the login page.");
+        Assert.That(await _homePage.Header.IsLoggedIn(), Is.False,
+            "Expected a username with different casing to be rejected.");
     }
 
     [TestCase(true)]
     [TestCase(false)]
-    public async Task Login_RememberMe_ControlsSessionPersistence(bool rememberMe)
+    public async Task Login_With_RememberMe_Option(bool rememberMe)
     {
         await _loginPage.Login(TestUsername, TestPassword, rememberMe);
         await _homePage.Header.WaitForLoggedIn();
 
         Assert.That(await _loginPage.HasPersistentSession(), Is.EqualTo(rememberMe),
-            $"Expected the session cookie to {(rememberMe ? "persist" : "be session-only")} when 'Remember me' is {(rememberMe ? "checked" : "unchecked")}.");
+            $"Expected the session cookie to persist only when 'Remember me' is checked (rememberMe={rememberMe}).");
     }
 
     [Test]
-    public async Task Login_WithWrongCredentials_ShowsError()
+    public async Task Login_WithWrongCredentials()
     {
         await _loginPage.Login("WrongUser1", "WrongPass1!");
 
-        var errors = await _loginPage.GetErrorMessages();
-        Assert.That(errors, Has.Some.Contains("Incorrect username or password."),
-            "Expected wrong credentials to be rejected with an 'incorrect username or password' error.");
+        var error = await _loginPage.GetErrorMessage();
+        var isLoggedIn = await _homePage.Header.IsLoggedIn();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(error, Does.Contain("Incorrect username or password."),
+                "Expected wrong credentials to be rejected with an 'incorrect username or password' error.");
+            Assert.That(isLoggedIn, Is.False,
+                "Expected wrong credentials to not log the user in.");
+        });
     }
 
-    [Test]
-    public async Task Login_WithBothFieldsBlank_ShowsBothValidationErrors()
+    // The overlay validates blank fields client-side by disabling the button, not via a server error.
+    [TestCase("", "")]
+    [TestCase("SomeUser", "")]
+    [TestCase("", "SomePass1!")]
+    public async Task Login_WithBlankFields(string username, string password)
     {
-        await _loginPage.Login("", "");
+        await _loginPage.FillCredentials(username, password);
 
-        var errors = await _loginPage.GetErrorMessages();
-        Assert.That(errors, Has.Some.Contains("Username cannot be blank."));
-        Assert.That(errors, Has.Some.Contains("Password cannot be blank."));
-    }
-
-    [TestCase("SomeUser", "", "Password cannot be blank.")]
-    [TestCase("", "SomePass1!", "Username cannot be blank.")]
-    public async Task Login_WithOneFieldBlank_ShowsValidationError(string username, string password, string expectedMessage)
-    {
-        await _loginPage.Login(username, password);
-
-        var errors = await _loginPage.GetErrorMessages();
-        Assert.That(errors, Has.Some.Contains(expectedMessage));
+        Assert.That(await _loginPage.IsSubmitDisabled(), Is.True,
+            "Expected the login button to stay disabled until both fields are filled.");
     }
 }
