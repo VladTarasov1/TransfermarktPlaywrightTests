@@ -58,10 +58,14 @@ public class TableTests : BaseTest
         // check that sorting by average age (DESC) puts the oldest and youngest squads in the right place
         await leaguePage.SortByColumn("ø age");
         var rowsByAge = await leaguePage.GetClubRows();
+        var ages = rowsByAge.Select(row => row.AverageAge).ToList();
+       
         Assert.Multiple(() =>
         {
-            Assert.That(rowsByAge.First().ClubName, Is.EqualTo("Fulham FC"),
-                "Expected Fulham FC to have the oldest average squad age.");
+            Assert.That(ages, Is.Ordered.Descending, 
+                "Expected clubs to be sorted by average age, oldest first.");
+            Assert.That(rowsByAge.First().ClubName, Is.EqualTo("Newcastle United"),
+                "Expected Newcastle United to have the oldest average squad age.");
             Assert.That(rowsByAge.Last().ClubName, Is.EqualTo("Chelsea FC"),
                 "Expected Chelsea FC to have the youngest average squad age.");
         });
